@@ -52,20 +52,22 @@ class QifParser(object):
         for chunk in chunks:
             if not chunk:
                 continue
-            first_line = chunk.split('\n')[0]
-            if first_line == '!Type:Cat':
+            first_line = chunk.split('\n')[0].lower()
+            if first_line == '!type:cat':
                 last_type = 'category'
-            elif first_line == '!Account':
+            elif first_line == '!type:bank':
+                last_type = 'transaction'
+            elif first_line == 'account':
                 last_type = 'account'
             elif first_line in NON_INVST_ACCOUNT_TYPES:
                 last_type = 'transaction'
                 transactions_header = first_line
-            elif first_line == '!Type:Invst':
+            elif first_line == '!type:invst':
                 last_type = 'investment'
                 transactions_header = first_line
-            elif first_line == '!Type:Class':
+            elif first_line == '!type:class':
                 last_type = 'class'
-            elif first_line == '!Type:Memorized':
+            elif first_line == '!type:memorized':
                 last_type = 'memorized'
                 transactions_header = first_line
             elif chunk.startswith('!'):
@@ -224,7 +226,7 @@ class QifParser(object):
             curItem.date_format = date_format
         lines = chunk.split('\n')
         for line in lines:
-            if not len(line) or line[0] == '\n' or line.startswith('!Type'):
+            if not len(line) or line[0] == '\n' or line.lower().startswith('!type'):
                 continue
             elif line[0] == 'D':
                 curItem.date = cls_.parseQifDateTime(line[1:])

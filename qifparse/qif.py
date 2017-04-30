@@ -49,14 +49,20 @@ class Qif(object):
         if not isinstance(item, Transaction)\
                 and not isinstance(item, MemorizedTransaction):
             raise RuntimeError(six.u("item not recognized"))
-        if header and not header in self._transactions:
-            self._transactions[header] = []
+            
         if not header:
-            header = self._last_header
+            if self._last_header:
+                header = self._last_header
+            else:
+                #if not header:
+                #    raise RuntimeError(six.u("no header provided yet"))
+                header = self._last_header = 'DEFAULT'
         else:
             self._last_header = header
-        if not header:
-            raise RuntimeError(six.u("no header provided yet"))
+
+        if header and not header in self._transactions:
+            self._transactions[header] = []
+        
         self._transactions[header].append(item)
 
     def get_accounts(self, name=None, atype=None):
